@@ -1,0 +1,11 @@
+fastapi
+flake8
+loguru
+pytest
+pytest-cov
+pyyaml
+requests
+uvicorn
+python-multipart
+openpyxl
+pandas

@@ -1,0 +1,25 @@
+version: "2"
+services:
+  stori-challenge-api:
+    container_name: stori-challenge-api
+    hostname: stori-challenge-api
+    image: stori-challenge-api:local
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    env_file:
+      - ../.env
+    volumes:
+      - ../app:/app
+    entrypoint: ["/tini", "/entrypoint.sh"]
+    command: ["app", "start"]
+    restart: always
+    ports:
+      - 3000:3000
+    networks:
+      - default
+
+networks:
+  default:
+    internal: false
+    name: STORI-ace
