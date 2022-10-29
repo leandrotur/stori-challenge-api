@@ -1,6 +1,6 @@
 """ Module that acts as controller for  s (es)."""
 import pandas as pd
-from .utils import send_mail
+from .utils import send_mail, get_config
 
 
 class Accounts:
@@ -12,6 +12,7 @@ class Accounts:
     ) -> None:
         self.account_name = account_name
         self.client_name = client_name
+        self.config = get_config()
 
     def send_account_details_mail(
         self,
@@ -42,9 +43,14 @@ class Accounts:
         htmlbody = htmlbody + avg_credit_by_month.to_html() + "\n\n"
         htmlbody = htmlbody + avg_debit_by_month.to_html()
         htmlbody = htmlbody + "<br> Best regards. <br><br> stori team"
-        send_mail(
+        response = send_mail(
             'Account summary - ' + self.account_name,
             htmlbody,
             'leandroturdera1982@gmail.com',
-            email_to)
-        return ''
+            email_to,
+            self.config['smtp_server']['host'],
+            self.config['smtp_server']['port'],
+            self.config['smtp_server']['user'],
+            self.config['smtp_server']['password']
+        )
+        return response

@@ -4,9 +4,10 @@ from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 from pathlib import Path
+from yaml import safe_load
 
 
-def send_mail(subject, bodymessage, from_addr, to_addr):
+def send_mail(subject, bodymessage, from_addr, to_addr, server, port, user, password):
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = from_addr
@@ -28,17 +29,27 @@ def send_mail(subject, bodymessage, from_addr, to_addr):
     encoders.encode_base64(mime)
     # add MIMEBase object to MIMEMultipart object
     msg.attach(mime)
-    msg.attach(MIMEText(
-        '<html><body>' + '<p><img src="cid:0"></p>' + bodymessage
-        + '</body></html>', 'html', 'utf-8'
+    msg.attach(
+        MIMEText(
+            '<html><body>' + '<p><img src="cid:0"></p>' + bodymessage + '</body></html>', 'html', 'utf-8'
         )
     )
 
-    server = smtplib.SMTP('smtp.mailgun.org', 587)
+    server = smtplib.SMTP(server, port)
     server.set_debuglevel(1)
     server.login(
-        'postmaster@sandboxc316f4780cb14a5d9fcc134593de8d0e.mailgun.org',
-        'c2ef9814b21d88a80681ace5d2b0a522-73e57fef-d7834906'
+        user,
+        password
     )
-    server.sendmail('leandroturdera1982@gmail.com', to_addr, msg.as_string())
+    server.sendmail(from_addr, to_addr, msg.as_string())
     server.quit()
+
+
+def get_config():
+    """ Reads a config from a YAML file."""
+    current_file = Path(__file__).resolve()
+    root_dir = current_file.parents[0]
+    config_file = root_dir / 'config/config.yaml'
+    with open(config_file, "r") as yml_config:
+        config = safe_load(yml_config)
+    return config

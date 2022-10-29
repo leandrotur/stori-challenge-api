@@ -20,6 +20,7 @@ def send_account_details_mail(
     account_name: str = 'Test account',
     client_name: str = 'Test client',
     authorized_email_to: str = 'leandro.g.bedrinan@gmail.com',
+
     file: UploadFile = File(...)
 ):
     """ Send email with account details"""
