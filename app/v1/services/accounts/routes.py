@@ -1,9 +1,8 @@
 """ Routing Module"""
 import traceback
-import json
 from io import BytesIO
 import pandas as pd
-from fastapi import APIRouter, Response, File, UploadFile
+from fastapi import APIRouter, File, UploadFile
 from fastapi.responses import JSONResponse
 from loguru import logger
 
@@ -22,14 +21,16 @@ def send_account_details_mail(
     client_name: str = 'Test client',
     authorized_email_to: str = 'leandro.g.bedrinan@gmail.com',
     file: UploadFile = File(...)
-    
 ):
     """ Send email with account details"""
     try:
         contents = file.file.read()
         buffer = BytesIO(contents)
         dataf = pd.read_csv(buffer, index_col='Id')
-        data = Accounts(account_name, client_name).send_account_details_mail(authorized_email_to, dataf)
+        data = Accounts(account_name, client_name).send_account_details_mail(
+            authorized_email_to,
+            dataf
+        )
         response = JSONResponse(data)
     except Exception as e:
         logger.error(e)

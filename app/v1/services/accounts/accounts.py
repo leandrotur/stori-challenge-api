@@ -24,12 +24,27 @@ class Accounts:
         data['month'] = data.Date.dt.strftime('%b')
         data['year'] = data.Date.dt.year
         data.drop('Date', inplace=True, axis=1)
-        transaction_count_by_month = data.groupby([(data.year), (data.month)]).count().rename(columns={'Transaction': 'Number of transactions'})
-        avg_credit_by_month = data[data['Transaction'] >= 0] 
-        avg_credit_by_month = avg_credit_by_month.groupby([(avg_credit_by_month.year), (avg_credit_by_month.month)]).mean().rename(columns={'Transaction': 'Average credit amount'})
-        avg_debit_by_month = data[data['Transaction'] < 0] 
-        avg_debit_by_month = avg_debit_by_month.groupby([(avg_debit_by_month.year), (avg_debit_by_month.month)]).mean().rename(columns={'Transaction': 'Average debit amount'})
-        htmlbody = f'Dear {self.client_name} <br> <br>     Below you will find you account details: <br> Total balance is {total_balance} \n\n'
-        htmlbody = htmlbody + "\n\n" + transaction_count_by_month.to_html() + "\n\n" + avg_credit_by_month.to_html() + "\n\n" + avg_debit_by_month.to_html() + "<br> Best regards. <br><br> stori team"
-        send_mail('Account summary - ' + self.account_name , htmlbody,'leandroturdera1982@gmail.com', email_to)
+        transaction_count_by_month = data.groupby(
+            [(data.year), (data.month)]
+        ).count().rename(columns={'Transaction': 'Number of transactions'})
+        avg_credit_by_month = data[data['Transaction'] >= 0]
+        avg_credit_by_month = avg_credit_by_month.groupby(
+            [(avg_credit_by_month.year), (avg_credit_by_month.month)]
+        ).mean().rename(columns={'Transaction': 'Average credit amount'})
+        avg_debit_by_month = data[data['Transaction'] < 0]
+        avg_debit_by_month = avg_debit_by_month.groupby(
+            [(avg_debit_by_month.year), (avg_debit_by_month.month)]
+        ).mean().rename(columns={'Transaction': 'Average debit amount'})
+        htmlbody = f'Dear {self.client_name} <br> <br>'
+        htmlbody = htmlbody + 'Below you will find you account details. <br>'
+        htmlbody = htmlbody + 'Total balance is ' + str(total_balance) + '\n\n'
+        htmlbody = htmlbody + transaction_count_by_month.to_html() + "\n\n"
+        htmlbody = htmlbody + avg_credit_by_month.to_html() + "\n\n"
+        htmlbody = htmlbody + avg_debit_by_month.to_html()
+        htmlbody = htmlbody + "<br> Best regards. <br><br> stori team"
+        send_mail(
+            'Account summary - ' + self.account_name,
+            htmlbody,
+            'leandroturdera1982@gmail.com',
+            email_to)
         return ''
