@@ -28,17 +28,21 @@ class Accounts:
         transaction_count_by_month = data.groupby(
             [(data.year), (data.month)]
         ).count().rename(columns={'Transaction': 'Number of transactions'})
-        avg_credit_by_month = data[data['Transaction'] >= 0]
-        avg_credit_by_month = avg_credit_by_month.groupby(
-            [(avg_credit_by_month.year), (avg_credit_by_month.month)]
+        credit = data[data['Transaction'] >= 0]
+        avg_credit = credit.mean()
+        avg_credit_by_month = credit.groupby(
+            [(credit.year), (credit.month)]
         ).mean().rename(columns={'Transaction': 'Average credit amount'})
-        avg_debit_by_month = data[data['Transaction'] < 0]
-        avg_debit_by_month = avg_debit_by_month.groupby(
-            [(avg_debit_by_month.year), (avg_debit_by_month.month)]
+        debit = data[data['Transaction'] < 0]
+        avg_debit = debit.mean()
+        avg_debit_by_month = debit.groupby(
+            [(debit.year), (debit.month)]
         ).mean().rename(columns={'Transaction': 'Average debit amount'})
         htmlbody = f'Dear {self.client_name} <br> <br>'
         htmlbody = htmlbody + 'Below you will find you account details. <br>'
         htmlbody = htmlbody + 'Total balance is ' + str(total_balance) + '\n\n'
+        htmlbody = htmlbody + 'Average credit amount: ' + str(avg_credit[0]) + '\n\n'
+        htmlbody = htmlbody + 'Average debit amount: ' + str(avg_debit[0]) + '\n\n'
         htmlbody = htmlbody + transaction_count_by_month.to_html() + "\n\n"
         htmlbody = htmlbody + avg_credit_by_month.to_html() + "\n\n"
         htmlbody = htmlbody + avg_debit_by_month.to_html()
