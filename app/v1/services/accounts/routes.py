@@ -4,6 +4,7 @@ import json
 from io import BytesIO
 import pandas as pd
 from fastapi import APIRouter, Response, File, UploadFile
+from fastapi.responses import JSONResponse
 from loguru import logger
 
 from .accounts import Accounts
@@ -16,18 +17,20 @@ router = APIRouter()
     description='''
     '''
 )
-def send_account_details_mail(file: UploadFile = File(...)):
+def send_account_details_mail(
+    account_name: str = 'Test account',
+    client_name: str = 'Test client',
+    authorized_email_to: str = 'leandro.g.bedrinan@gmail.com',
+    file: UploadFile = File(...)
+    
+):
     """ Send email with account details"""
     try:
         contents = file.file.read()
         buffer = BytesIO(contents)
-        dataf = pd.read_excel(buffer, engine='openpyxl', skiprows=1)
-        data = Accounts().send_account_details_mail(dataf)
-        response = Response(
-            content=json.dumps(data, indent=4, sort_keys=True, default=str),
-            media_type="application/json",
-            status_code=200
-        )
+        dataf = pd.read_csv(buffer, index_col='Id')
+        data = Accounts(account_name, client_name).send_account_details_mail(authorized_email_to, dataf)
+        response = JSONResponse(data)
     except Exception as e:
         logger.error(e)
         logger.error(traceback.format_exc())
@@ -35,9 +38,5 @@ def send_account_details_mail(file: UploadFile = File(...)):
             'status': 500,
             'data': f'{traceback.format_exc()}'
         }
-        response = Response(
-            content=json.dumps(data),
-            media_type="application/json",
-            status_code=500
-        )
+        response = JSONResponse(data, 500)
     return response

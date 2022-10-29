@@ -1,0 +1,14 @@
+__pycache__
+.pytest_cache
+.env
+.git*
+.flake8
+.pylintrc
+.pycodestyle
+.idea
+.vscode
+*.code-workspace
+**/*~
+**/*.log
+*.md
+infra
